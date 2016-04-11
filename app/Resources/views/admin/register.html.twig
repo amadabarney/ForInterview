@@ -1,0 +1,33 @@
+{# app/Resources/views/admin/register.html.twig #}
+
+<form action="{{ path('register_check') }}" method="post">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="_username" />
+    <br/><br/>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="_password" align="absmiddle"/>
+    <br/><br/>
+    <label for="email">Email:&#9;</label>
+    <input type="text" id="email" name="_email" align="absmiddle"/>
+    <br/><br/>
+    <label for="telphone">Telphone:</label>
+    <input type="text" id="telphone" name="_telphone" align="absmiddle"/>
+    <br/><br/>
+    <label for="qq">QQ:&#9; </label>
+    <input type="text" id="qq" name="_qq" align="absmiddle"/>
+    <br/><br/>
+    <label for="gender">Gender:&#9;</label>
+    <select name="_gender" >   
+        <option value="1">male</option>   
+        <option value="0">female</option>   
+    </select>
+    <br/><br/>
+    <button type="submit">register</button>
+</form>
+<form action="{{ path('login') }}" method="post">
+    <button type="submit">back</button>
+</form>
+
+{% if error %}
+    <div>{{ error }}</div>
+{% endif %}
