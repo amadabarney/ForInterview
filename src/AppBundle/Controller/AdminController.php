@@ -45,15 +45,11 @@ class AdminController extends Controller
         return $this->preCheck(function(){
             $user = $this->getDoctrine()
                  ->getRepository('AppBundle\Entity\User')
-                 ->find(htmlentities($_SESSION["userId"]));
+                 ->findAll();
             return $this->render(
                 'admin/index.html.twig',
                 array(
-                    'name' => $user->getUsername(),
-                    'email' => $user->getEmail(),
-                    'telphone' => $user->getTelphone(),
-                    'gender' => $user->getGender(),
-                    'qq' => $user->getQq(),
+                    'data' => $user,
                 )
             );
         });
@@ -70,14 +66,14 @@ class AdminController extends Controller
             $telphone = $this->_getRealContent("_telphone");
             $gender = $this->_getRealContent("_gender");
             $qq = $this->_getRealContent("_qq");
-
+            $id = $this->_getRealContent("_id");
             if(!is_numeric($qq) || ($gender > 1 || $gender < 0) || !$this->_emailCheck($email) || !is_numeric($telphone))
             {
                 throw $this->createNotFoundException('Paramter Err');
             }
 
             $em = $this->getDoctrine()->getEntityManager();
-            $user = $em->getRepository('AppBundle\Entity\User')->find(htmlentities($_SESSION["userId"]));
+            $user = $em->getRepository('AppBundle\Entity\User')->find(htmlentities($id));
 
             if (!$user) {
                 throw $this->createNotFoundException('No user found for id');
