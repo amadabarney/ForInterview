@@ -261,3 +261,5 @@ dfd066,127.0.0.1,GET,http://localhost:8000/register,1460458561,,200
 acedf4,127.0.0.1,GET,http://localhost:8000/register,1460458624,,200
 f90d22,127.0.0.1,POST,http://localhost:8000/register_check,1460458635,,200
 066caf,127.0.0.1,GET,http://localhost:8000/login,1460458641,,200
+5eed10,127.0.0.1,GET,http://localhost:8000/,1460465588,,302
+720190,127.0.0.1,GET,http://localhost:8000/login,1460465590,,200
