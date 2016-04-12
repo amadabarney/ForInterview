@@ -1,28 +1,95 @@
+<script src="../scripts/jquery-2.2.3.js"></script>
+<script src="../scripts/jquery.md5.js"></script>
 {# app/Resources/views/admin/index.html.twig #}
 
-<form action="{{ path('modify') }}" method="post">
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="_username" value="{{ name }}" />
-    <br/><br/>
-    <label for="email">Email:</label>
-    <input type="text" id="email" name="_email" value="{{ email }}" />
-    <br/><br/>
-    <label for="telphone">Telphone:</label>
-    <input type="text" id="telphone" name="_telphone" value="{{ telphone }}" />
-    <br/><br/>
-    <label for="qq">Email:</label>
-    <input type="text" id="qq" name="_qq" value="{{ qq }}" />
-    <br/>
-    <br/>
-    <label for="gender">Gender:</label>
-    <select name="_gender" >   
-        <option value="1">male</option>   
-        <option value="0">female</option>   
-    </select>
-    <br/><br/>
-    <button type="submit">modify</button>
-</form>
+<div style="margin-left:auto;margin-right:auto;text-align:center;">
 
-<form action="{{ path('logout') }}" method="post">
-    <button type="submit">logout</button>
-</form>
+<table width=”450″ border=”1″ cellspacing=”0″ cellpadding=”2″ bordercolor=”#009900″ style="margin:auto">
+<tr>
+<td>
+Name
+</td><td>Email
+</td><td>Telphone
+</td><td>QQ
+</td><td>Gender
+</td><td>
+</td>
+</tr>
+{% for row in data %}
+<tr>
+
+<input type="hidden" name="_id" id="id{{ row.id }}" value="{{ row.id }}"/>
+<td>
+    <input type="text" id="username{{ row.id }}" name="_username" value="{{ row.username }}" />
+</td><td>
+    <input type="text" id="email{{ row.id }}" name="_email" value="{{ row.email }}" />
+</td><td>
+    <input type="text" id="telphone{{ row.id }}" name="_telphone" value="{{ row.telphone }}" />
+</td><td>
+    <input type="text" id="qq{{ row.id }}" name="_qq" value="{{ row.qq }}" />
+</td><td>
+    <select name="_gender" id="gender{{ row.id }}">   
+    {% if row.gender==1 %}
+        <option value="1" selected="selected">male</option>   
+        <option value="0">female</option>   
+    {% else %}
+        <option value="1">male</option>   
+        <option value="0" selected="selected">female</option>  
+    {% endif %}
+    </select>
+</td><td>
+    <button type="submit" onclick="onClickButton({{ row.id }})" id="modify{{ row.id }}">modify</button>
+</td>
+
+</tr>
+<tr></tr>
+{% endfor %}
+
+</table>
+
+<br/>
+
+<button type="submit" onclick="onClickLogout()" id="logout">logout</button>
+</div>
+
+<script type="text/javascript">
+    function onClickButton(id)
+    {
+        $("#modify"+id).attr("disabled","disabled");
+        var user = {
+            _id:id,
+            _username:$("#username"+id).val(),
+            _email:$("#email"+id).val(),
+            _telphone:$("#telphone"+id).val(),
+            _qq:$("#qq"+id).val(),
+            _gender:$("#gender"+id).val(),
+        };
+
+        $.ajax({
+            type : 'post',
+            url:  "{{ path('modify') }}",
+            data:  user,
+            dataType: 'json',
+            success: function(data) {
+                if(data.success)
+                {
+                    alert(data.msg);
+                    window.location.reload();
+                }
+                else
+                {
+                    alert(data.msg);
+                    $("#modify"+id).removeAttr("disabled");
+                }
+
+            }
+        });
+
+    }
+    
+    function onClickLogout()
+    {
+        $("#logout").attr("disabled","disabled");
+        window.location.href="{{ path('logout') }}";
+    }
+</script>

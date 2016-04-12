@@ -1,25 +1,59 @@
+<script src="../scripts/jquery-2.2.3.js"></script>
+<script src="../scripts/jquery.md5.js"></script>
+
 {# app/Resources/views/admin/login.html.twig #}
- 
-<form action="{{ path('login_check') }}" method="post">
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="_username" value="{{ last_username }}" />
- 
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="_password" />
- 
-    {#
-        If you want to control the URL the user
-        is redirected to on success (more details below)
-        <input type="hidden" name="_target_path" value="/account" />
-    #}
-    <br/><br/>
-    <button type="submit">login</button>
-</form>
 
-<form action="{{ path('register') }}" method="post">
-    <button type="submit">register</button>
-</form>
+<div style="margin-left:auto;margin-right:auto;text-align:center;">
+<label for="username">Username:</label>
+<input type="text" id="username" name="_username" value="{{ last_username }}" />
 
-{% if error %}
+<label for="password">Password:</label>
+<input type="password" id="password" name="_password" />
+
+<br/><br/>
+<button type="submit" onclick="onClickButton()" id="login">login</button>
+
+
+<button type="submit" onclick="onClickRegister()" id="register">register</button>
+</div>
+<!-- {% if error %}
     <div>{{ error }}</div>
-{% endif %}
+{% endif %} -->
+
+<script type="text/javascript">
+    function onClickButton()
+    {
+        $("#login").attr("disabled","disabled");
+        var pa = $("#password").val() == "" ? $("#password").val():"none";
+        var user = {
+            _username:$("#username").val(),
+            _password:$.md5(pa)
+        };
+
+        $.ajax({
+            type : 'post',
+            url:  "{{ path('login_check') }}",
+            data:  user,
+            dataType: 'json',
+            success: function(data) {
+                if(data.success)
+                {
+                    window.location.reload();
+                }
+                else
+                {
+                    alert(data.msg);
+                    $("#login").removeAttr("disabled");
+                }
+
+            }
+        });
+
+    }
+    
+    function onClickRegister()
+    {
+        $("#register").attr("disabled","disabled");
+        window.location.href="{{ path('register') }}";
+    }
+</script>

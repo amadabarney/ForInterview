@@ -1,33 +1,76 @@
+<script src="../scripts/jquery-2.2.3.js"></script>
+<script src="../scripts/jquery.md5.js"></script>
 {# app/Resources/views/admin/register.html.twig #}
 
-<form action="{{ path('register_check') }}" method="post">
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="_username" />
-    <br/><br/>
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="_password" align="absmiddle"/>
-    <br/><br/>
-    <label for="email">Email:&#9;</label>
-    <input type="text" id="email" name="_email" align="absmiddle"/>
-    <br/><br/>
-    <label for="telphone">Telphone:</label>
-    <input type="text" id="telphone" name="_telphone" align="absmiddle"/>
-    <br/><br/>
-    <label for="qq">QQ:&#9; </label>
-    <input type="text" id="qq" name="_qq" align="absmiddle"/>
-    <br/><br/>
-    <label for="gender">Gender:&#9;</label>
-    <select name="_gender" >   
-        <option value="1">male</option>   
-        <option value="0">female</option>   
-    </select>
-    <br/><br/>
-    <button type="submit">register</button>
-</form>
-<form action="{{ path('login') }}" method="post">
-    <button type="submit">back</button>
-</form>
+<div style="margin-left:auto;margin-right:auto;text-align:center;">
+<label for="username">Username:</label>
+<input type="text" id="username" name="_username" style="vertical-align:middle;" />
+<br/><br/>
+<label for="password">Password:</label>
+<input type="password" id="password" name="_password" style="vertical-align:middle;"/>
+<br/><br/>
+<label for="email">Email:&#9;</label>
+<input type="text" id="email" name="_email" style="vertical-align:middle;"/>
+<br/><br/>
+<label for="telphone">Telphone:</label>
+<input type="text" id="telphone" name="_telphone"/>
+<br/><br/>
+<label for="qq">QQ:&#9; </label>
+<input type="text" id="qq" name="_qq"/>
+<br/><br/>
+<label for="gender">Gender:&#9;</label>
+<select name="_gender" id="gender">   
+    <option value="1">male</option>   
+    <option value="0">female</option>   
+</select>
+<br/><br/>
+<button type="submit" onclick="onClickButton()" id="register">register</button>
 
-{% if error %}
+<button type="submit" onclick="onClickBack()" id="back">back</button>
+</div>
+<!-- {% if error %}
     <div>{{ error }}</div>
-{% endif %}
+{% endif %} -->
+
+<script type="text/javascript">
+    function onClickButton()
+    {
+        $("#register").attr("disabled","disabled");
+        var pa = $("#password").val() == "" ? $("#password").val():"none";
+        var user = {
+            _username:$("#username").val(),
+            _password:$.md5(pa),
+            _email:$("#email").val(),
+            _telphone:$("#telphone").val(),
+            _qq:$("#qq").val(),
+            _gender:$("#gender").val(),
+        };
+
+        $.ajax({
+            type : 'post',
+            url:  "{{ path('register_check') }}",
+            data:  user,
+            dataType: 'json',
+            success: function(data) {
+                if(data.success)
+                {
+                    alert(data.msg);
+                    onClickBack();
+                }
+                else
+                {
+                    alert(data.msg);
+                    $("#register").removeAttr("disabled");
+                }
+
+            }
+        });
+
+    }
+    
+    function onClickBack()
+    {
+        $("#back").attr("disabled","disabled");
+        window.location.href="{{ path('login') }}";
+    }
+</script>

@@ -1,17 +1,17 @@
 # To get started with security, check out the documentation:
 # http://symfony.com/doc/current/book/security.html
 security:
-    encoders:
-        AppBundle\Entity\User:
-            algorithm: bcrypt
+    # encoders:
+        # AppBundle\Entity\User:
+            # algorithm: bcrypt
     # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
     providers:
         in_memory:
             memory: ~
-        our_db_provider:
-            entity:
-                class: AppBundle:User
-                property: username
+        # our_db_provider:
+        #     entity:
+        #         class: AppBundle:User
+        #         property: username
                 # if you're using multiple entity managers
                 # manager_name: customer
 
@@ -29,8 +29,8 @@ security:
             # http://symfony.com/doc/current/book/security.html#a-configuring-how-your-users-will-authenticate
     firewalls:
         default:
-            pattern:    ^/
+            # pattern:    ^/
             http_basic: ~
-            provider: our_db_provider
+            # provider: our_db_provider
             #form_login: ~
             # http://symfony.com/doc/current/cookbook/security/form_login_setup.html

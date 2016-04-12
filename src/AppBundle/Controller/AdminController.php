@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
  
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
 class AdminController extends Controller
@@ -37,6 +38,13 @@ class AdminController extends Controller
         return false;
     }
 
+    private function _getJsonResponse($content)
+    {
+        $response = new Response(json_encode($content));
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
+    }
+
     /**
      * @Route("/",name="index")
      */
@@ -60,7 +68,8 @@ class AdminController extends Controller
      */
     public function ModifyAction()
     {
-        return $this->preCheck(function(){
+        if(isset($_SESSION["userId"]) && is_int($_SESSION["userId"]))
+        {
             $username = $this->_getRealContent("_username");
             $email = $this->_getRealContent("_email");
             $telphone = $this->_getRealContent("_telphone");
@@ -69,14 +78,14 @@ class AdminController extends Controller
             $id = $this->_getRealContent("_id");
             if(!is_numeric($qq) || ($gender > 1 || $gender < 0) || !$this->_emailCheck($email) || !is_numeric($telphone))
             {
-                throw $this->createNotFoundException('Paramter Err');
+                return $this->_getJsonResponse(array("msg" => 'Paramter Err', "success" => false));
             }
 
             $em = $this->getDoctrine()->getEntityManager();
             $user = $em->getRepository('AppBundle\Entity\User')->find(htmlentities($id));
 
             if (!$user) {
-                throw $this->createNotFoundException('No user found for id');
+                return $this->_getJsonResponse(array("msg" => 'No user found for id', "success" => false));
             }
 
             $user->setUsername($username);
@@ -87,8 +96,12 @@ class AdminController extends Controller
             $em->flush();
 
             unset($_SESSION["error"]);
-            return $this->redirect('/');
-        });
+            return $this->_getJsonResponse(array("msg" => "modify success", "success" => true));
+        }
+        else
+        {
+            return $this->_getJsonResponse(array("msg" => "not login", "success" => false));
+        }
     }
 
     /**
@@ -96,6 +109,11 @@ class AdminController extends Controller
      */
     public function loginAction()
     {
+        if(isset($_SESSION["userId"]) && is_int($_SESSION["userId"]))
+        {
+            return $this->redirect('/');
+        }
+
         $lastUsername = isset($_SESSION["lastUsername"]) ? $_SESSION["lastUsername"]:"";
         $errorMsg = isset($_SESSION["error"]) ? $_SESSION["error"]:"";
         return $this->render(
@@ -132,19 +150,20 @@ class AdminController extends Controller
         if(empty($username) || empty($password))
         {
             $_SESSION['error'] = "username or password empty";
-            return $this->redirect("login");
+ 
+            return $this->_getJsonResponse(array("msg" => $_SESSION['error'], "success" => false));
         }
         $user = $this->getDoctrine()
-                 ->getRepository('AppBundle\Entity\User')->findOneBy(array('username' => $username,'password'=> md5($password)));
+                 ->getRepository('AppBundle\Entity\User')->findOneBy(array('username' => $username,'password'=> $password));
 
         if($user)
         {
             $_SESSION['userId'] = $user->getId();
-            return $this->redirect('/');
+            return $this->_getJsonResponse(array("msg" => "login success", "success" => true));
         }
 
         $_SESSION['error'] = "not found user account";
-        return $this->redirect("login");
+        return $this->_getJsonResponse(array("msg" => $_SESSION['error'], "success" => false));
     }
 
     /**
@@ -176,14 +195,14 @@ class AdminController extends Controller
         if(!is_numeric($qq) || ($gender > 1 || $gender < 0) || !$this->_emailCheck($email) || !is_numeric($telphone) || empty($username) || empty($password))
         {
             $_SESSION["error"] = "Param Err";
-            return $this->redirect("register");
+            return $this->_getJsonResponse(array("msg" => $_SESSION['error'], "success" => false));
         }
 
         $em = $this->getDoctrine()->getEntityManager();
         $em->getConnection()->beginTransaction();
         $user = new \AppBundle\Entity\User();
         $user->setUsername($username);
-        $user->setPassword(md5($password));
+        $user->setPassword($password);
         $user->setEmail($email);
         $user->setTelphone($telphone);
         $user->setGender($gender);
@@ -201,11 +220,11 @@ class AdminController extends Controller
             $em->getConnection()->rollback();
             $em->close();
             $_SESSION["error"] = $e;
-            return $this->redirect("register");
+            return $this->_getJsonResponse(array("msg" => $_SESSION['error'], "success" => false));
         }
 
         unset($_SESSION["error"]);
-        return $this->redirect("login");
+        return $this->_getJsonResponse(array("msg" => "register success", "success" => true));
     }
 }
 ?>
