@@ -8,6 +8,12 @@ run server
 
 db migrate
 
+first create database in mysql
+
+	create database symfony;
+
+then use console to migrate
+
 	php app/console doctrine:schema:update --force
 
 then in browser enter to access
